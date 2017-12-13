@@ -42,16 +42,23 @@ def filterJSON(path):
 def encodeJSON(path):
     seqs = []
     anns = []
+    numStructured = 0
+    numDisordered = 0
+    numContext = 0
     with open(path, 'r') as r:
         original = json.load(r)
     for i in range(0, len(original)):
-        currentSeq, currentAnn = seqUnravel(original[i]['sequence'],original[i]['consensus'])
+        struct, disord, cont, currentSeq, currentAnn = seqUnravel(original[i]['sequence'],original[i]['consensus'])
         seqs += currentSeq
         anns += currentAnn
+        numStructured += struct
+        numDisordered += disord
+        numContext += cont
     result = [seqs, anns]
     seqs = np.asarray(seqs)
     anns = np.asarray(anns)
     print(seqs.shape)
+    print(numDisordered, numStructured, numContext)
     buildModel(seqs,anns)
     # with open('encoded.json', 'w') as w:
     #     json.dump(result,w)
@@ -64,13 +71,16 @@ def seqUnravel(sequence, consensus):
             if aminoAcids[j] == sequence[i]:
                 oneHot[j] = 1
         result += [oneHot]
-    finalSequence, finalConsensus = splitSequence(result, consensus)
-    return finalSequence, finalConsensus
+    struct, disord, cont, finalSequence, finalConsensus = splitSequence(result, consensus)
+    return struct, disord, cont, finalSequence, finalConsensus
 
 def splitSequence(sequence, consensus):
     boundaries = [0]*20 + [1]
     encodedSeq = []
     encodedAnns = []
+    struct = 0
+    disord = 0
+    cont = 0
     for i in range(0,len(consensus)):
         x = range(consensus[i]['start']-1,consensus[i]['end'])
         start = consensus[i]['start']-1
@@ -78,10 +88,13 @@ def splitSequence(sequence, consensus):
         annotation = str(consensus[i]['ann']).upper()
         if (annotation == 'S'):
             annotation = 0
+            struct += (end - start + 1)
         elif (annotation == 'D'):
             annotation = 1
+            disord += (end - start + 1)
         else :
             annotation = 2
+            cont += (end - start + 1)
         for j in x:
             current = []
             if (j < 7):
@@ -95,7 +108,7 @@ def splitSequence(sequence, consensus):
             encodedSeq += [current]
             encodedAnns += [annotation]
 
-    return encodedSeq , encodedAnns
+    return struct, disord, cont, encodedSeq , encodedAnns
 
 def buildModel(X, y):
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=0)
