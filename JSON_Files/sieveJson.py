@@ -22,6 +22,8 @@ def main():
             encodeJSON(sys.argv[1])
         elif (sys.argv[2] == 'filter'):
             filterJSON(sys.argv[1])
+        elif(sys.argv[2] == 'fasta'):
+            fastaFormat(sys.argv[1])
         else:
             print("Invalid Entry!")
             print("Expect arguments in format <python sieveson.py JSONFILE function> ")
@@ -120,6 +122,21 @@ def buildModel(X, y):
     # model.fit(X_train,y_train)
     # print(model.score(X_test,y_test))
 
+def fastaFormat(path):
+    result = []
+    n = 80
+    with open(path, 'r') as r:
+        raw = json.load(r)
+    for i in range(0, len(raw)):
+        ident = ">" + str(raw[i]['protein']['disprot_id']) + " | " + str(raw[i]['protein']['protein_name'])
+        current = [ident]
+        seq = raw[i]['protein']['sequence']
+        current += [seq[i:i+n] for i in range(0,len(seq),n)]
+        result += current
+    with open('disprotFasta.fa','w') as w:
+        for line in result:
+            w.write(line + "\n")
+    print ("Finished, created fasta format file <disprotFasta.fa>")
 
 if __name__ == "__main__":
     main()
