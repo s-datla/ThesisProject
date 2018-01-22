@@ -84,7 +84,7 @@ def splitSequence(sequence, consensus):
             cont += (end - start + 1)
         for j in x:
             if (j < ((windowSize-1)/2)):
-                current = [boundaries]*(((windowSize-1)/2)-j) + sequence[0:min(j+((windowSize+1)/2),end)]
+                current = [boundaries]*(((windowSize-1)/2)-j) + sequence[0:min(j+((windowSize+1)/2),len(sequence)-1)]
                 current = current + [boundaries]*(21-len(current))
             elif (j > end-((windowSize-1)/2)):
                 current = sequence[(j-((windowSize-1)/2)):end+1] + [boundaries]*(((windowSize-1)/2)-(end - j))
