@@ -114,7 +114,7 @@ def buildModel(X, y):
     print(scaler.fit(X))
     print(scaler.mean_)
     scaledTrainX = scaler.transform(X)
-    model = MLPClassifier(hidden_layer_sizes=(441,441,2), max_iter=500)
+    model = MLPClassifier(hidden_layer_sizes=(441,441,441), max_iter=500)
     model.fit(scaledTrainX,y)
     print("Fitted Model !\n" + "Now saving model and scaler")
     joblib.dump(model, 'model.pkl')
