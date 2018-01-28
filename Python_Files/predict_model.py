@@ -7,8 +7,11 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import cross_val_score
 from sklearn.externals import joblib
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
 
 aminoAcids = 'ACDEGHILKMNFPQRSTVWY'
 windowSize = 21
@@ -97,20 +100,35 @@ def splitSequence(sequence, consensus):
     return struct, disord, cont, encodedSeq , encodedAnns
 
 def buildModel(X, y):
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=0)
-    model = LogisticRegression()
-    model.fit(X,y)
-    # scores = cross_val_score(model, X, y, cv=10)
-    # print(scores)
-    # print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-    joblib.dump(model, 'logistic.pkl')
-    # model.fit(X_train,y_train)
-    # print(model.score(X_test,y_test))
+    '''
+    Code for use later (can be diagonostic or reverting back to previous models / parameters)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=0)
+        model = LogisticRegression()
+        model.fit(X,y)
+        scores = cross_val_score(model, X, y, cv=10)
+        print(scores)
+        print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+        joblib.dump(model, 'logistic.pkl')
+    '''
+    scaler = StandardScaler()
+    print(scaler.fit(X))
+    print(scaler.mean_)
+    scaledTrainX = scaler.transform(X)
+    model = MLPClassifier(hidden_layer_sizes=(441,441,2), max_iter=500)
+    model.fit(scaledTrainX,y)
+    print("Fitted Model !\n" + "Now saving model and scaler")
+    joblib.dump(model, 'model.pkl')
+    joblib.dump(scaler, 'scaler.pkl')
 
 def predictModel(X,y):
-    model = joblib.load('logistic.pkl')
-    predictedY = model.score(X,y)
-    print(predictedY)
+    print("Loading model and scaler")
+    model = joblib.load('model.pkl')
+    scaler  = joblib.load('scaler.pkl')
+    scaledTestX = scaler.transform(X)
+
+    predictedY = model.predict(scaledTestX)
+    print(confusion_matrix(y,predictedY))
+    print(classification_report(y,predictedY))
 
 if __name__ == "__main__":
     main()
