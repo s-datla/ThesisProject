@@ -88,7 +88,7 @@ def splitSequence(sequence, consensus):
         for j in x:
             if (j < ((windowSize-1)/2)):
                 current = [boundaries]*(((windowSize-1)/2)-j) + sequence[0:min(j+((windowSize+1)/2),len(sequence)-1)]
-                current = current + [boundaries]*(21-len(current))
+                current = current + [boundaries]*(windowSize-len(current))
             elif (j > end-((windowSize-1)/2)):
                 current = sequence[(j-((windowSize-1)/2)):end+1] + [boundaries]*(((windowSize-1)/2)-(end - j))
             else:
@@ -112,10 +112,11 @@ def buildModel(X, y):
     '''
     scaler = StandardScaler()
     print(scaler.fit(X))
-    print(scaler.mean_)
     scaledTrainX = scaler.transform(X)
-    model = MLPClassifier(hidden_layer_sizes=(441,441,441), max_iter=500)
-    model.fit(scaledTrainX,y)
+    model = MLPClassifier(hidden_layer_sizes=(windowSize*21,windowSize*21,1), max_iter=500)
+    # model.fit(scaledTrainX,y)
+    scores = cross_val_score(model, scaledTrainX,y,cv=10)
+    print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     print("Fitted Model !\n" + "Now saving model and scaler")
     joblib.dump(model, 'model.pkl')
     joblib.dump(scaler, 'scaler.pkl')
