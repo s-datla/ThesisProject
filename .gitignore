@@ -1,2 +1,7 @@
 # Ignored Files
 **/encoded.json
+*.pkl
+*.npz
+
+# Ignored folders
+/Data_Files/DisorderHunter-master/*
