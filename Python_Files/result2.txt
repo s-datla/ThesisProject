@@ -1,0 +1,21 @@
+----WINDOW SIZE---
+---- 21----
+406750 406750 406750
+Created Windows !
+Length: 406750
+2209 2209 2209
+Created Windows !
+Length: 2209
+Now saving model and scaler
+[[97014 11535     0]
+ [12675 12974     0]
+ [   28     2     0]]
+/Library/Python/2.7/site-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+             precision    recall  f1-score   support
+
+          0       0.88      0.89      0.89    108549
+          1       0.53      0.51      0.52     25649
+          2       0.00      0.00      0.00        30
+
+avg / total       0.82      0.82      0.82    134228
