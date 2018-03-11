@@ -1,19 +1,29 @@
+# Standard imports
 import sys
 import io
 import string
 import json
 import math
+
+# Utility imports
+from collections import Counter
 from pprint import pprint
 import numpy as np
 import scipy.sparse
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn import metrics
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import cross_val_score
 from sklearn.externals import joblib
+from sklearn.model_selection import train_test_split
+
+# Metric calculation functions
+from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef, roc_curve
+from sklearn.model_selection import cross_val_score
+from imblearn.metrics import classification_report_imbalanced
+
+# Classification imports
+from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import BaggingClassifier
+from imblearn.ensemble import BalancedBaggingClassifier
 
 windowSize = 7
 
@@ -29,6 +39,9 @@ def main():
         elif (sys.argv[2] == 'build' and len(sys.argv) == 4):
             windowSize = int(sys.argv[3])
             buildModel(sys.argv[1])
+        elif(sys.arv[2] == 'bagClassify' and len(sy.argv) == 4):
+            windowSize = int(sys.argv[3])
+            bagClassify(sys.argv[1])
         elif(sys.argv[2] == 'predict'):
             predictModel(sys.argv[1])
         elif(sys.argv[2] == 'predictMTX'):
@@ -84,6 +97,34 @@ def mtxBuild(path):
     predictedY = model.predict(X_test)
     print(confusion_matrix(Y_test,predictedY))
     print(classification_report(Y_test,predictedY))
+
+def bagClassify(path):
+    mtxCompressed = np.load(path)
+    X = mtxCompressed['savedX']
+    Y = mtxCompressed['savedY']
+    print("Started scaling!")
+    X = np.reshape(X,(X.shape[0],X.shape[1] * X.shape[2]))
+    scaler = StandardScaler()
+    print(scaler.fit(X))
+    scaledTrainX = scaler.transform(X)
+    print("Splitting into Test and Train")
+    X_train, X_test, Y_train, Y_test = train_test_split(scaledTrainX, Y, test_size=0.33, random_state=19)
+    print("Training Data is distributed as follows: " + sorted(Counter(Y_train).items()))
+    print("Testing Data is distributed as follows: " + sorted(Counter(Y_test).items()))
+    bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=200),ratio='auto',replacement=False,random_state=19)
+    bbc.fit(X_train,Y_train)
+    print("Fitted Model !\n" +  "Now saving model and scaler")
+    joblib.dump(model, 'bag_model.pkl')
+    joblib.dump(scaler, 'bag_scaler.pkl')
+    predictedY = bbc.predict(X_test)
+    print(confusion_matrix(Y_test,predictedY))
+    print(classification_report_imbalanced(Y_test,predictedY))
+    probs = bbc.predict_proba(X_test)
+    pprint(probs)
+
+
+def ROCplot(predicted,ground):
+    fpr, tpr, thresholds = roc_curve(ground,predicted,pos_label=1)
 
 def predictModel(path):
     compressed = np.load(path)
