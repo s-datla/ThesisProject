@@ -74,3 +74,76 @@ avg / total       0.82      0.82      0.82    134228
   % self.max_iter, ConvergenceWarning)
 /usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
   'precision', 'predicted', average, warn_for)
+----WINDOW SIZE---
+---- 21----
+406750 406750 406750
+Created Windows !
+Length: 406750
+2209 2209 2209
+Created Windows !
+Length: 2209
+Started scaling!
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Splitting into Test and Train
+Training Data is distributed as follows: [(0, 220688), (1, 51782), (2, 52)]
+Testing Data is distributed as follows: [(0, 108549), (1, 25649), (2, 30)]
+Fitted Model !
+Now saving model and scaler
+Traceback (most recent call last):
+  File "predict_model.py", line 165, in <module>
+    main()
+  File "predict_model.py", line 44, in main
+    bagClassify(sys.argv[1])
+  File "predict_model.py", line 123, in bagClassify
+    joblib.dump(bbc, 'bag_model.pkl')
+NameError: global name 'bbc' is not defined
+----WINDOW SIZE---
+---- 21----
+406750 406750 406750
+Created Windows !
+Length: 406750
+2209 2209 2209
+Created Windows !
+Length: 2209
+Started scaling!
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Splitting into Test and Train
+Training Data is distributed as follows: [(0, 220688), (1, 51782), (2, 52)]
+Testing Data is distributed as follows: [(0, 108549), (1, 25649), (2, 30)]
+Fitted Model !
+Now saving model and scaler
+[[98748  9801     0]
+ [13265 12384     0]
+ [   28     2     0]]
+[[98748  9801     0]
+ [13265 12384     0]
+ [   28     2     0]]
+[[100675   7874      0]
+ [ 14436  11213      0]
+ [    29      1      0]]
+             precision    recall  f1-score   support
+
+          0       0.88      0.91      0.90    108549
+          1       0.56      0.48      0.52     25649
+          2       0.00      0.00      0.00        30
+
+avg / total       0.82      0.83      0.82    134228
+
+             precision    recall  f1-score   support
+
+          0       0.88      0.91      0.90    108549
+          1       0.56      0.48      0.52     25649
+          2       0.00      0.00      0.00        30
+
+avg / total       0.82      0.83      0.82    134228
+
+             precision    recall  f1-score   support
+
+          0       0.87      0.93      0.90    108549
+          1       0.59      0.44      0.50     25649
+          2       0.00      0.00      0.00        30
+
+avg / total       0.82      0.83      0.82    134228
+
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
