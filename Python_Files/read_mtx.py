@@ -36,7 +36,7 @@ def crawl_files(path,anns,save):
 
 def process_mtx(file):
     # The amino acid values are encoded in the mtx files as XAXCDEFGHIKLMNPQRSTVWXYXXXX, where X denotes the unknown amino acids / terminating characters
-    mtxPositions = [1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22];
+    mtxPositions = [1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,23];
     with open(file,'r') as r:
         raw = r.readlines()
     counter = 0
@@ -53,7 +53,7 @@ def process_mtx(file):
                 currentPSS += [int(values[mtxPositions[j]])]
             pssm += [currentPSS]
             counter += 1
-    # print counter,seqLength,len(PSSM),len(PSSM[0])
+    # print counter,seqLength,len(pssm),len(pssm[0])
     if counter > seqLength:
         print "File: " + str(file) + " has invalid sequence length!"
         print "Expected: " + str(seqLength) + " , Actual: " + str(counter)
@@ -67,7 +67,7 @@ def load_compressed_file(path):
     return annotations
 
 def linear_scaler(pssm):
-    finalLimits = [[0,0]]*20
+    finalLimits = [[0,0]]*21
     for i in range(0,len(finalLimits)):
         finalLimits[i] = [min(el[i] for el in pssm),max(el[i] for el in pssm)]
     for j in range(0, len(pssm)):

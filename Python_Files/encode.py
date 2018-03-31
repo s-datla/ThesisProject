@@ -197,8 +197,8 @@ def split_sequence(sequence, consensus,num):
             annotation = 1
             disord += (end - start + 1)
         else :
-            annotation = 2
-            cont += (end - start + 1)
+            annotation = 0
+            struct += (end - start + 1)
         for j in x:
             if (j < ((windowSize-1)/2)):
                 current = [boundaries]*(((windowSize-1)/2)-j) + sequence[0:min(j+((windowSize+1)/2),len(sequence)-1)]
@@ -228,13 +228,14 @@ def encode_MTX(path,save):
     Y = labels.tolist()
     savedX = np.array(X)
     savedY = np.array(Y)
+    print(savedX.shape,savedY.shape)
     np.savez_compressed(save,savedX=savedX,savedY=savedY)
 
 
 def create_windows(old_pssm,lengths):
     pssm = old_pssm.tolist()
-    background = 1.0/ 20.0
-    boundaries = [math.log(background)]*20
+    background = 10e-07
+    boundaries = [math.log(background)]*20 + [math.log(1)]
     windows = []
     pssmPosition = 0
     for i in lengths:

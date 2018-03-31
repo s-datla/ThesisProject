@@ -147,3 +147,78 @@ avg / total       0.82      0.83      0.82    134228
 
 /usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
   'precision', 'predicted', average, warn_for)
+/usr/local/Cellar/python@2/2.7.14_3/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python: can't open file 'read_mtx': [Errno 2] No such file or directory
+/usr/local/Cellar/python@2/2.7.14_3/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python: can't open file 'read_mtx': [Errno 2] No such file or directory
+406750 406750 406750
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 227, in encode_MTX
+    X = create_windows(pssm,lengths)
+  File "encode.py", line 237, in create_windows
+    boundaries = [math.log(background)]*20 + [log(1)]
+NameError: global name 'log' is not defined
+2209 2209 2209
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 227, in encode_MTX
+    X = create_windows(pssm,lengths)
+  File "encode.py", line 237, in create_windows
+    boundaries = [math.log(background)]*20 + [log(1)]
+NameError: global name 'log' is not defined
+Invalid Entry!
+Expect arguments in format <python sieveson.py JSONFILE function> 
+Invalid Entry!
+Expect arguments in format <python sieveson.py JSONFILE function> 
+406750 406750 406750
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 227, in encode_MTX
+    X = create_windows(pssm,lengths)
+  File "encode.py", line 237, in create_windows
+    boundaries = [math.log(background)]*20 + [log(1)]
+NameError: global name 'log' is not defined
+2209 2209 2209
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 227, in encode_MTX
+    X = create_windows(pssm,lengths)
+  File "encode.py", line 237, in create_windows
+    boundaries = [math.log(background)]*20 + [log(1)]
+NameError: global name 'log' is not defined
+Invalid Entry!
+Expect arguments in format <python sieveson.py JSONFILE function> 
+Invalid Entry!
+Expect arguments in format <python sieveson.py JSONFILE function> 
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 224, in encode_MTX
+    pssm = mtxCompressed['pssm']
+  File "/usr/local/lib/python2.7/site-packages/numpy/lib/npyio.py", line 239, in __getitem__
+    raise KeyError("%s is not a file in the archive" % key)
+KeyError: 'pssm is not a file in the archive'
+2209 2209 2209
+Traceback (most recent call last):
+  File "encode.py", line 253, in <module>
+    main()
+  File "encode.py", line 32, in main
+    encode_MTX(sys.argv[1], str(sys.argv[3]))
+  File "encode.py", line 227, in encode_MTX
+    X = create_windows(pssm,lengths)
+  File "encode.py", line 237, in create_windows
+    boundaries = [math.log(background)]*20 + [log(1)]
+NameError: global name 'log' is not defined

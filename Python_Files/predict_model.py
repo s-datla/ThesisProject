@@ -10,11 +10,15 @@ from collections import Counter
 from pprint import pprint
 import numpy as np
 import scipy.sparse
+from scipy import interp
 from sklearn.externals import joblib
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as pyplot
+from itertools import cycle
 
 # Metric calculation functions
-from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef, roc_curve
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef, roc_curve, auc
 from sklearn.model_selection import cross_val_score
 from imblearn.metrics import classification_report_imbalanced
 
@@ -112,31 +116,80 @@ def bagClassify(path):
     print("Training Data is distributed as follows: " + str(sorted(Counter(Y_train).items())))
     print("Testing Data is distributed as follows: " + str(sorted(Counter(Y_test).items())))
     std = MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500, solver='adam',random_state=19)
-    adam = MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500,random_state=19)
-    fgs = MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500, solver='lbfgs',random_state=19)
-    # bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
-    # bbc.fit(X_train,Y_train)
-    std.fit(X_train,Y_train)
-    adam.fit(X_train,Y_train)
-    fgs.fit(X_train,Y_train)
-    print("Fitted Model !\n" +  "Now saving model and scaler")
-    # joblib.dump(bbc, 'bag_model.pkl')
-    joblib.dump(std, 'std.pkl')
-    joblib.dump(adam, 'adam.pkl')
-    joblib.dump(fgs, 'fgs.pkl')
-    joblib.dump(scaler, 'bag_scaler.pkl')
-    predY1 = std.predict(X_test)
-    predY2 = adam.predict(X_test)
-    predY3 = fgs.predict(X_test)
-    print(confusion_matrix(Y_test,predY1))
-    print(confusion_matrix(Y_test,predY2))
-    print(confusion_matrix(Y_test,predY3))
-    print(classification_report(Y_test,predY1))
-    print(classification_report(Y_test,predY2))
-    print(classification_report(Y_test,predY3))
+    # svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
+    bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
 
-def ROCplot(predicted,ground):
-    fpr, tpr, thresholds = roc_curve(ground,predicted,pos_label=1)
+    bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
+    bbc.fit(X_train,Y_train)
+    # svc.fit(X_train,Y_train)
+    bag.fit(X_train,Y_train)
+    std.fit(X_train,Y_train)
+    print("Fitted Model !\n" +  "Now saving model and scaler")
+    joblib.dump(bbc, 'bag_model.pkl')
+    # joblib.dump(svc, 'svc.pkl')
+    joblib.dump(bag,'bag.pkl')
+    joblib.dump(std,'std.pkl')
+    joblib.dump(scaler, 'bag_scaler.pkl')
+    # predY1 = svc.predict(X_test)
+    predY1 = bbc.predict(X_test)
+    predY2 = bag.predict(X_test)
+    predY3 = std.predict(X_test)
+
+    print "Balanced Bagging MLP"
+    print(confusion_matrix(Y_test,predY1))
+    print(classification_report_imbalanced(Y_test,predY1))
+    print(matthews_corrcoef(Y_test, predY1))
+    print "Balanced Bagging"
+    print(confusion_matrix(Y_test,predY2))
+    print(classification_report_imbalanced(Y_test,predY2))
+    print(matthews_corrcoef(Y_test, predY2))
+    print "Standard MLP"
+    print(confusion_matrix(Y_test,predY3))
+    print(classification_report_imbalanced(Y_test,predY3))
+    print(matthews_corrcoef(Y_test, predY3))
+
+    probs_bbc = bbc.predict_proba(X_test)
+    probs_bag = bag.predict_proba(X_test)
+    probs_std = std.predict_proba(X_test)
+
+    ROCplot(probs_bbc,Y_test,"ROCplotBBC.png")
+    ROCplot(probs_bag,Y_test,"ROCplotBAG.png")
+    ROCplot(probs_std,Y_test,"ROCplotSTD.png")
+
+def ROCplot(probs,Y_test,save):
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(0,2):
+        fpr[i], tpr[i], _ = roc_curve(Y_test,probs[:,i])
+        roc_auc[i] = auc(fpr[i],tpr[i])
+    all_fpr = np.unique(np.concatenate([fpr[i] for i in range(0,2)]))
+    mean_fpr = np.zeros_like(all_fpr)
+    for i in range(0,2):
+        mean_tpr += interp(all_fpr,fpr[i],tpr[i])
+    mean_tpr /= 2
+    fpr['macro'] = all_fpr
+    tpr['macro'] = mean_tpr
+    roc_auc['macro'] = auc(fpr['macro'],tpr['macro'])
+
+    pyplot.figure()
+    pyplot.plot(fpr["micro"], tpr["micro"],
+         label='micro-average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"]),color='black', linestyle=':', linewidth=4)
+    pyplot.plot(fpr["macro"], tpr["macro"],
+             label='macro-average ROC curve (area = {0:0.2f})'.format(roc_auc["macro"]),color='navy', linestyle=':', linewidth=4)
+
+    colors = cycle(['olivedrab', 'darkorange', 'darkorchid'])
+    for i, color in zip(range(0,2), colors):
+        pyplot.plot(fpr[i], tpr[i], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f})'.format(i, roc_auc[i]))
+    pyplot.plot([0, 1], [0, 1], 'r--', lw=lw)
+    pyplot.xlim([0.0, 1.0])
+    pyplot.ylim([0.0, 1.05])
+    pyplot.xlabel('False Positive Rate')
+    pyplot.ylabel('True Positive Rate')
+    pyplot.title('Some extension of Receiver operating characteristic to multi-class')
+    pyplot.legend(loc="lower right")
+    pyplot.show()
+    pyplot.savefig(save)
 
 def predictModel(path):
     compressed = np.load(path)
