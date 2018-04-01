@@ -163,6 +163,31 @@ def bagClassify(path):
     ROCplot(probs_bbc,Y_test,"ROCplotBBC.png")
     ROCplot(probs_bag,Y_test,"ROCplotBAG.png")
     ROCplot(probs_std,Y_test,"ROCplotSTD.png")
+    multiROCplot([probs_bbc,probs_bag,probs_std],Y_test,"multiROCplot.png",['Bagging MLP','Bagging','MLP'])
+
+def multiROCplot(probs_list, Y_test,save,models):
+    assert(len(models) == len(probs_list));
+    fpr = dict()
+    tpr = dict()
+    for j in range(0,len(probs_list)):
+        for i in range(0,2):
+            fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test,[probs_list[j][k][i] for k in range(len(probs_list[0]))])
+            roc_auc[(j,i)] = auc(fpr[(j,i)],tpr[(j,i)])
+    lw = 2
+    pyplot.figure()
+    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','goldenrod']])
+    for j,colors in zip(range(0,len(probs_list)),color_list):
+        for k,color in zip(range(0,2),colors):
+        pyplot.plot(fpr[(j,k)], tpr[(j,k)], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f}), Model: {}'.format(k, roc_auc[(j,k)],models[j]))
+    pyplot.plot([0, 1], [0, 1], 'r--', lw=lw)
+    pyplot.xlim([0.0, 1.0])
+    pyplot.ylim([0.0, 1.05])
+    pyplot.xlabel('False Positive Rate')
+    pyplot.ylabel('True Positive Rate')
+    pyplot.title('Multi-Model Receiver Operating Characteristic Plot')
+    pyplot.legend(loc="lower right")
+    pyplot.show()
+    pyplot.savefig(save)
 
 def ROCplot(probs,Y_test,save):
     fpr = dict()
@@ -199,7 +224,7 @@ def ROCplot(probs,Y_test,save):
     pyplot.ylim([0.0, 1.05])
     pyplot.xlabel('False Positive Rate')
     pyplot.ylabel('True Positive Rate')
-    pyplot.title('Some extension of Receiver operating characteristic to multi-class')
+    pyplot.title('Receiver Operating Characteristic Plot')
     pyplot.legend(loc="lower right")
     pyplot.show()
     pyplot.savefig(save)
