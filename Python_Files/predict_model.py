@@ -169,25 +169,26 @@ def multiROCplot(probs_list, Y_test,save,models):
     assert(len(models) == len(probs_list));
     fpr = dict()
     tpr = dict()
+    roc_auc = dict()
     for j in range(0,len(probs_list)):
         for i in range(0,2):
             fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test,[probs_list[j][k][i] for k in range(len(probs_list[0]))])
             roc_auc[(j,i)] = auc(fpr[(j,i)],tpr[(j,i)])
     lw = 2
     pyplot.figure()
-    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','goldenrod']])
+    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','firebrick']])
     for j,colors in zip(range(0,len(probs_list)),color_list):
         for k,color in zip(range(0,2),colors):
-        pyplot.plot(fpr[(j,k)], tpr[(j,k)], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f}), Model: {}'.format(k, roc_auc[(j,k)],models[j]))
+            pyplot.plot(fpr[(j,k)], tpr[(j,k)], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f}), Model: {2}'.format(k, roc_auc[(j,k)],models[j]))
     pyplot.plot([0, 1], [0, 1], 'r--', lw=lw)
     pyplot.xlim([0.0, 1.0])
     pyplot.ylim([0.0, 1.05])
     pyplot.xlabel('False Positive Rate')
     pyplot.ylabel('True Positive Rate')
     pyplot.title('Multi-Model Receiver Operating Characteristic Plot')
-    pyplot.legend(loc="lower right")
+    l = pyplot.legend(loc='upper center', bbox_to_anchor=(0.5,-0.1))
     pyplot.show()
-    pyplot.savefig(save)
+    pyplot.savefig(save, bbox_extra_artists=(l,), bbox_inches='tight')
 
 def ROCplot(probs,Y_test,save):
     fpr = dict()
