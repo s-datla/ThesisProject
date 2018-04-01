@@ -13,6 +13,8 @@ import scipy.sparse
 from scipy import interp
 from sklearn.externals import joblib
 from sklearn.model_selection import train_test_split
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as pyplot
 from itertools import cycle
 
@@ -115,22 +117,28 @@ def bagClassify(path):
     X_train, X_test, Y_train, Y_test = train_test_split(scaledTrainX, Y, test_size=0.33, random_state=19)
     print("Training Data is distributed as follows: " + str(sorted(Counter(Y_train).items())))
     print("Testing Data is distributed as follows: " + str(sorted(Counter(Y_test).items())))
-    std = MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500, solver='adam',random_state=19)
-    # svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
-    bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
-
-    bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*20,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
-    bbc.fit(X_train,Y_train)
+    # std = MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500, solver='adam',random_state=19)
+    # # svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
+    # bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
+    #
+    # bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
+    # bbc.fit(X_train,Y_train)
     # svc.fit(X_train,Y_train)
-    bag.fit(X_train,Y_train)
-    std.fit(X_train,Y_train)
+    # bag.fit(X_train,Y_train)
+    # std.fit(X_train,Y_train)
+    bbc = joblib.load('bag_model.pkl')
+    bag = joblib.load('bag.pkl')
+    std = joblib.load('std.pkl')
+    scaler  = joblib.load('bag_scaler.pkl')
     print("Fitted Model !\n" +  "Now saving model and scaler")
-    joblib.dump(bbc, 'bag_model.pkl')
-    # joblib.dump(svc, 'svc.pkl')
-    joblib.dump(bag,'bag.pkl')
-    joblib.dump(std,'std.pkl')
-    joblib.dump(scaler, 'bag_scaler.pkl')
+
+    # joblib.dump(bbc, 'bag_model.pkl')
+    # # joblib.dump(svc, 'svc.pkl')
+    # joblib.dump(bag,'bag.pkl')
+    # joblib.dump(std,'std.pkl')
+    # joblib.dump(scaler, 'bag_scaler.pkl')
     # predY1 = svc.predict(X_test)
+
     predY1 = bbc.predict(X_test)
     predY2 = bag.predict(X_test)
     predY3 = std.predict(X_test)
@@ -161,10 +169,14 @@ def ROCplot(probs,Y_test,save):
     tpr = dict()
     roc_auc = dict()
     for i in range(0,2):
-        fpr[i], tpr[i], _ = roc_curve(Y_test,probs[:,i])
+        fpr[i], tpr[i], _ = roc_curve(Y_test,[probs[k][i] for k in range(len(probs))])
         roc_auc[i] = auc(fpr[i],tpr[i])
+
+    fpr['micro'], tpr['micro'], _ = roc_curve(Y_test, [probs[k][1] for k in range(len(probs))])
+    roc_auc['micro'] = auc(fpr['micro'], tpr['micro'])
+
     all_fpr = np.unique(np.concatenate([fpr[i] for i in range(0,2)]))
-    mean_fpr = np.zeros_like(all_fpr)
+    mean_tpr = np.zeros_like(all_fpr)
     for i in range(0,2):
         mean_tpr += interp(all_fpr,fpr[i],tpr[i])
     mean_tpr /= 2
@@ -172,6 +184,7 @@ def ROCplot(probs,Y_test,save):
     tpr['macro'] = mean_tpr
     roc_auc['macro'] = auc(fpr['macro'],tpr['macro'])
 
+    lw = 2
     pyplot.figure()
     pyplot.plot(fpr["micro"], tpr["micro"],
          label='micro-average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"]),color='black', linestyle=':', linewidth=4)
