@@ -1,0 +1,225 @@
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P60896/P60896.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P60896/P60896.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P45976/P45976.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P45976/P45976.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P46937/P46937.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P46937/P46937.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q9Y3M2/Q9Y3M2.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q9Y3M2/Q9Y3M2.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q99LM3/Q99LM3.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q99LM3/Q99LM3.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P46108/P46108.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/P46108/P46108.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/O43236-6/O43236-6.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/O43236-6/O43236-6.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q06253/Q06253.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q06253/Q06253.pbdat
+
+Running PSI-BLAST search ...
+
+Generating PSSM ...
+
+Predicting disorder with DISOPRED2 ...
+
+Running neural network classifier ...
+
+Running nearest neighbour classifier ...
+
+Combining disordered residue predictions ...
+
+Predicting protein binding residues within disordered regions ...
+
+Finished
+
+Disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q98XH7/Q98XH7.diso
+
+Protein binding disordered residue predictions in /home/ucackxb/Projects/Project_Students/2017/Srikrishna/DISOPRED_RUNS/Q98XH7/Q98XH7.pbdat
+
+ID: P60896
+Name: P60896
+Description:  P60896 | Protein No: 0
+Number of features: 0
+Seq('PROCESSING ... MSEKKQPVDLGLLEEDDEFEEFPAEDWAGLDEDEDAHVW...ETS', SingleLetterAlphabet())
+ID: P45976
+Name: P45976
+Description:  P45976 | Protein No: 1
+Number of features: 0
+Seq('PROCESSING ... MSSSEDEDDKFLYGSDSELALPSSKRSRDDEADAGASSN...NSK', SingleLetterAlphabet())
+ID: P46937
+Name: P46937
+Description:  P46937 | Protein No: 2
+Number of features: 0
+Seq('PROCESSING ... MDPGQQPPPQPAPQGQGQPPSQPPQGQGPPSGPGQPAPA...TWL', SingleLetterAlphabet())
+ID: Q9Y3M2
+Name: Q9Y3M2
+Description:  Q9Y3M2 | Protein No: 3
+Number of features: 0
+Seq('PROCESSING ... MPFFGNTFSPKKTPPRKSASLSNLHSLDRSTREVELGLE...KRK', SingleLetterAlphabet())
+ID: Q99LM3
+Name: Q99LM3
+Description:  Q99LM3 | Protein No: 4
+Number of features: 0
+Seq('PROCESSING ... MEQTEGNSSEDGTTVSPTAGNLETPGSQGIAEEVAEGTV...KKK', SingleLetterAlphabet())
+ID: P46108
+Name: P46108
+Description:  P46108 | Protein No: 5
+Number of features: 0
+Seq('PROCESSING ... MAGNFDSEERSSWYWGRLSRQEAVALLQGQRHGVFLVRD...DFS', SingleLetterAlphabet())
+ID: O43236-6
+Name: O43236-6
+Description:  O43236-6 | Protein No: 6
+Number of features: 0
+Seq('PROCESSING ... MIKRFLEDTTDDGELSKFVKDFSGNASCHPPEAKTWASR...GCH', SingleLetterAlphabet())
+ID: Q06253
+Name: Q06253
+Description:  Q06253 | Protein No: 7
+Number of features: 0
+Seq('PROCESSING ... MQSINFRTARGNLSEVLNNVEAGEEVEITRRGREPAVIV...VNR', SingleLetterAlphabet())
+ID: Q98XH7
+Name: Q98XH7
+Description:  Q98XH7 | Protein No: 8
+Number of features: 0
+Seq('PROCESSING ... MEPVDPKLEPWKHPGSQPKTACNNCYCKRCCLHCQVCFM...SEQ', SingleLetterAlphabet())

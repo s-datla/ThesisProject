@@ -6,21 +6,21 @@ import os
 from subprocess import Popen, PIPE
 
 read_mtx = [['read_mtx.py'],
-            ['../Data_Files/test_files/disprotFasta.fa','../Data_Files/test_files/reference.fa'],
-            ['../Data_Files/test_files/compressedTrain.npz','../Data_Files/test_files/compressedTest.npz'],
-            ['../Data_Files/test_files/pssmTrain','../Data_Files/test_files/pssmTest']]
+            ['../Data_Files/train_files/disprotFasta.fa','../Data_Files/test_files/disopred3test.fa'],
+            ['../Data_Files/temp_files/compressedDisprot.npz','../Data_Files/temp_files/compressedDisopred.npz'],
+            ['../Data_Files/temp_files/pssmTrain','../Data_Files/temp_files/pssmTest']]
 json = [
             ['encode.py'],
-            ['../Data_Files/filterJSON.json','../Data_Files/test_files/disopredJSON.json'],
-            ['../Data_Files/test_files/compressedTrain','../Data_Files/test_files/compressedTest']]
+            ['../Data_Files/train_files/disprotfiltered.json','../Data_Files/test_files/disopred3filtered.json'],
+            ['../Data_Files/temp_files/compressedTrain','../Data_Files/temp_files/compressedTest']]
 encoded = [
             ['encode.py'],
-            ['../Data_Files/test_files/pssmTrain.npz','../Data_Files/test_files/pssmTest.npz'],
-            ['../Data_Files/test_files/encTrain','../Data_Files/test_files/encTest']]
+            ['../Data_Files/temp_files/pssmTrain.npz','../Data_Files/temp_files/pssmTest.npz'],
+            ['../Data_Files/temp_files/encTrain','../Data_Files/temp_files/encTest']]
 
 predict = [
             ['predict_model.py'],
-            ['../Data_Files/test_files/encTrain.npz','../Data_Files/test_files/encTest.npz']]
+            ['../Data_Files/temp_files/encTrain.npz','../Data_Files/temp_files/encTest.npz']]
 #
 # for i in range(7,23,2):
 #     cmd = 'python'
