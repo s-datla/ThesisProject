@@ -117,53 +117,78 @@ def bagClassify(path):
     X_train, X_test, Y_train, Y_test = train_test_split(scaledTrainX, Y, test_size=0.33, random_state=19)
     print("Training Data is distributed as follows: " + str(sorted(Counter(Y_train).items())))
     print("Testing Data is distributed as follows: " + str(sorted(Counter(Y_test).items())))
-    std = MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500, solver='adam',random_state=19)
-    # svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
-    bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
 
-    bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
-    bbc.fit(X_train,Y_train)
+
+    '''
+        The following models were used:
+            Multi Layered Perceptron Classifier (Layout -  441,2)
+            Balanced Bagging Meta Estimator (200 Weak Estimators)
+            Balanced Baggin Meta Estimator (MLP Layout)
+            Support Vector Classifier (Balanced class weights, OneVSRest)
+    '''
+    # std = MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500, solver='adam',random_state=19)
+    # svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
+    # bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
+    # bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
+
+    # Fitting All Models
+    # bbc.fit(X_train,Y_train)
     # svc.fit(X_train,Y_train)
-    bag.fit(X_train,Y_train)
-    std.fit(X_train,Y_train)
-    # bbc = joblib.load('bag_model.pkl')
-    # bag = joblib.load('bag.pkl')
-    # std = joblib.load('std.pkl')
-    # scaler  = joblib.load('bag_scaler.pkl')
+    # bag.fit(X_train,Y_train)
+    # std.fit(X_train,Y_train)
+
     print("Fitted Model !\n" +  "Now saving model and scaler")
 
-    joblib.dump(bbc, 'bag_model.pkl')
-    # # joblib.dump(svc, 'svc.pkl')
-    joblib.dump(bag,'bag.pkl')
-    joblib.dump(std,'std.pkl')
-    joblib.dump(scaler, 'bag_scaler.pkl')
+    # Saving fitted Models and scaler
+    # joblib.dump(svc, 'svc.pkl')
+    # joblib.dump(bbc, 'bag_model.pkl')
+    # joblib.dump(bag,'bag.pkl')
+    # joblib.dump(std,'std.pkl')
+    # joblib.dump(scaler, 'bag_scaler.pkl')
+
+    # Loading saved Models and scaler
+    bbc = joblib.load('bag_model.pkl')
+    bag = joblib.load('bag.pkl')
+    std = joblib.load('std.pkl')
+    # svc = joblib.load('svc.pkl')
+    scaler  = joblib.load('bag_scaler.pkl')
+
     # predY1 = svc.predict(X_test)
+    # predY1 = bbc.predict(X_test)
+    # predY2 = bag.predict(X_test)
+    # predY3 = std.predict(X_test)
 
-    predY1 = bbc.predict(X_test)
-    predY2 = bag.predict(X_test)
-    predY3 = std.predict(X_test)
+    # Classification Metric display
+    # print "SVC"
+    # print(confusion_matrix(Y_test,predY1))
+    # print(classification_report_imbalanced(Y_test,predY1))
+    # print(matthews_corrcoef(Y_test, predY1))
+    # print "Balanced Bagging"
+    # print(confusion_matrix(Y_test,predY2))
+    # print(classification_report_imbalanced(Y_test,predY2))
+    # print(matthews_corrcoef(Y_test, predY2))
+    # print "Standard MLP"
+    # print(confusion_matrix(Y_test,predY3))
+    # print(classification_report_imbalanced(Y_test,predY3))
+    # print(matthews_corrcoef(Y_test, predY3))
 
-    print "Balanced Bagging MLP"
-    print(confusion_matrix(Y_test,predY1))
-    print(classification_report_imbalanced(Y_test,predY1))
-    print(matthews_corrcoef(Y_test, predY1))
-    print "Balanced Bagging"
-    print(confusion_matrix(Y_test,predY2))
-    print(classification_report_imbalanced(Y_test,predY2))
-    print(matthews_corrcoef(Y_test, predY2))
-    print "Standard MLP"
-    print(confusion_matrix(Y_test,predY3))
-    print(classification_report_imbalanced(Y_test,predY3))
-    print(matthews_corrcoef(Y_test, predY3))
+    # probs_bbc = bbc.predict_proba(X_test)
+    # probs_bag = bag.predict_proba(X_test)
+    # probs_std = std.predict_proba(X_test)
+    # probs_svc = svc.predict_proba(X_test)
 
-    probs_bbc = bbc.predict_proba(X_test)
-    probs_bag = bag.predict_proba(X_test)
-    probs_std = std.predict_proba(X_test)
+    # ROCplot(probs_bbc,Y_test,"ROCplotBBC.png")
+    # ROCplot(probs_bag,Y_test,"ROCplotBAG.png")
+    # ROCplot(probs_std,Y_test,"ROCplotSTD.png")
+    # ROCplot(probs_svc,Y_test,"ROCplotSVC.png")
 
-    ROCplot(probs_bbc,Y_test,"ROCplotBBC.png")
-    ROCplot(probs_bag,Y_test,"ROCplotBAG.png")
-    ROCplot(probs_std,Y_test,"ROCplotSTD.png")
-    multiROCplot([probs_bbc,probs_bag,probs_std],Y_test,"multiROCplot.png",['Bagging MLP','Bagging','MLP'])
+    # multiROCplot([probs_bbc,probs_bag,probs_std,probs_svc],Y_test,"multiROCplot.png",['Bagging MLP','Bagging','MLP','SVC'])
+    bbc_probs_train = bbc.predict_proba(X_train)
+    bag_probs_train = bag.predict_proba(X_train)
+    std_probs_train = std.predict_proba(X_train)
+    # svc_probs_train = std.predict_proba(X_train)
+    print len(std_probs_train), len(bag_probs_train), len(bbc_probs_train)
+
 
 def multiROCplot(probs_list, Y_test,save,models):
     assert(len(models) == len(probs_list));
