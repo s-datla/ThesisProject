@@ -2,6 +2,8 @@ import sys, string, io, os, math
 import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plot
+from scipy import interp
+from itertools import cycle
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -17,8 +19,8 @@ from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 
 from sklearn.feature_selection import RFE, RFECV
 from sklearn.model_selection import train_test_split,StratifiedKFold
-from sklearn.metrics import matthews_corrcoef,classification_report,confusion_matrix
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import matthews_corrcoef,classification_report,confusion_matrix, roc_curve,auc
+from sklearn.preprocessing import StandardScaler, label_binarize
 from sklearn.externals import joblib
 
 from imblearn.metrics import classification_report_imbalanced
@@ -50,26 +52,26 @@ def main():
 def readFasta():
     # LABELS: 1 = CYTO, 2 = MITO, 3 = NUCLEUS, 4 = SECRETED
     files = []
-    for fa in os.listdir("FASTA"):
-        filePath = "FASTA/" + str(fa)
+    for fa in os.listdir("../Data_Files/organelle_files/"):
+        filePath = "../Data_Files/organelle_files/" + str(fa)
         files += [filePath]
     files = sorted(files)
     print files
     labels = []
     sequences = []
-    species_list = []
+    # species_list = []
     for i in range(0,len(files)):
         for seq_record in SeqIO.parse(files[i],'fasta'):
-            species, processed = processSeq(seq_record)
+            processed = processSeq(str(seq_record.seq))
             sequences += [processed]
-            species_list += [species]
+            # species_list += [species]
             # sequences += [oneHotEncode(seq_record)]
             labels += [i]
     l = np.asarray(labels)
     s = np.asarray(sequences)
-    labelSpecies(species_list)
+    # labelSpecies(species_list)
     print "Distribution of labels = " + str(sorted(Counter(labels).items()))
-    np.savez_compressed('data',labels=labels,seqs=sequences)
+    np.savez_compressed('../Data_Files/temp_files/organelle',labels=labels,seqs=sequences)
     return sequences,labels
 
 def oneHotEncode(sequence):
@@ -97,7 +99,7 @@ def createWindows(sequences,labels):
     assert(len(windows) == len(new_labels))
     return windows,new_labels
 
-def processSeq(seq_record):
+def processSeq(seq):
 
     ''' Protein features found:
         - Sequence Length
@@ -112,10 +114,10 @@ def processSeq(seq_record):
     '''
 
 
-    seq = str(seq_record.seq)
+    # seq = str(seq_record.seq)
     prot = ProteinAnalysis(seq)
-    desc = str(seq_record.description).split('_')
-    species = desc[1].split(' ')[0]
+    # desc = str(seq_record.description).split('_')
+    # species = desc[1].split(' ')[0]
     seq_length = len(seq)
     isoelectric = prot.isoelectric_point()
     gravy = calculateGravy(seq,0,seq_length)
@@ -151,7 +153,7 @@ def processSeq(seq_record):
                     AA_global_dist + AA_local_head + AA_local_tail + list(ss_frac)
 
     # print seq_length, GC_distribution, mol_weight, aroma, isoelectric
-    return species, return_vector
+    return return_vector
 
 def calculateGravy(sequence,start,end):
     total = 0
@@ -217,7 +219,7 @@ def optimalFeatures(X,y):
     plot.xlabel("Number of features selected")
     plot.ylabel("Cross validation score (nb of correct classifications)")
     plot.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
-    plot.show()
+    plot.savefig("Plots/OptimalFeatures.png")
 
 def evaluateFeatures(X,y, num_features):
     scaler = StandardScaler()
@@ -242,30 +244,56 @@ def evaluateFeatures(X,y, num_features):
 
     importances = selector.ranking_
     indices = np.argsort(importances)
-    sorted_labels = []
-    print len(labels),len(indices)
-    for i in range(0,len(indices)):
-        sorted_labels += labels[indices[i]]
-    print len(importances),len(indices),X.shape[1]
-    print("Feature Ranking:")
-    for r in range(0,X.shape[1]):
-        print "{}: {} ({})".format(r+1,labels[indices[r]],importances[indices[r]])
-    f = plot.figure()
-    plot.title("Feature importances")
-    plot.bar(range(X.shape[1]), importances[indices],color="b", align="center")
-    plot.xticks(range(X.shape[1]), sorted_labels,rotation='vertical')
-    plot.xlim([-1, X.shape[1]])
-    plot.show()
+    # sorted_labels = []
+    # print len(labels),len(indices)
+    # for i in range(0,len(indices)):
+    #     sorted_labels += labels[indices[i]]
+    # print len(importances),len(indices),X.shape[1]
+    # print("Feature Ranking:")
+    # for r in range(0,X.shape[1]):
+    #     print "{}: {} ({})".format(r+1,labels[indices[r]],importances[indices[r]])
+    # f = plot.figure()
+    # plot.title("Feature importances")
+    # plot.bar(range(X.shape[1]), importances[indices],color="b", align="center")
+    # plot.xticks(range(X.shape[1]), sorted_labels,rotation='vertical')
+    # plot.xlim([-1, X.shape[1]])
+    # plot.savefig("Plots/")
 
     sorted_features = []
     for i in range(0,len(X)):
         row = X[i]
         current_features = [row[indices[i]] for i in range(0,num_features)]
-        print len(current_features)
+        # print len(current_features)
         sorted_features += [current_features]
-    print(indices[0:num_features])
+    # print(indices[0:num_features])
     return sorted_features
 
+def buildPredict(predict_seq):
+    sequences,labels = readFasta()
+    X = np.asarray(sequences)
+    y = np.asarray(labels)
+    indices = [0,29,30,31,33,35,36,38,80,41,42,27,43,49,52,57,59,61,64,65,72,75,79,48,26,81,24,8,5,25,4,10,11,7,13,14,15,3,12,20,23,1,2,21,16,6,19,18,17]
+    sorted_features = []
+    for i in range(0,len(X)):
+        row = X[i]
+        current_features = [row[indices[j]] for j in range(0,len(indices))]
+        sorted_features += [current_features]
+    new_X = np.asarray(sorted_features)
+    scaler = StandardScaler()
+    print(scaler.fit(new_X))
+    scaled_train_x = scaler.transform(new_X)
+    X_train,X_test,y_train,y_test = train_test_split(scaled_train_x,y,random_state=19,test_size=0.3)
+    svm = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
+    svm.fit(X_train,y_train)
+
+    sorted_predict = []
+    for i in range(0,len(predict_seq)):
+        temp_predict = processSeq(predict_seq[i])
+        temp = [temp_predict[indices[j]] for j in range(0,len(indices))]
+        sorted_predict += [temp]
+    scaled_predict_x = scaler.transform(sorted_predict)
+    probs_svm = svm.decision_function(scaled_predict_x)
+    return probs_svm
 
 def buildModel(X,y):
     # X = np.reshape(X,(X.shape[0],X.shape[1] * X.shape[2]))
@@ -276,7 +304,7 @@ def buildModel(X,y):
     X_train,X_test,y_train,y_test = train_test_split(scaled_train_x,y,random_state=19,test_size=0.3)
 
     bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
-    svm = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovo')
+    svm = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
     neural = MLPClassifier(max_iter=500,random_state=19,solver='lbfgs',alpha=1e-5,hidden_layer_sizes=(49,8,4))
     ada = AdaBoostClassifier(n_estimators=100,random_state=19)
     logistic = LogisticRegression(solver='lbfgs',max_iter=500)
@@ -287,6 +315,7 @@ def buildModel(X,y):
     neural.fit(X_train,y_train)
     ada.fit(X_train,y_train)
     logistic.fit(X_train,y_train)
+
     # joblib.dump(bag,'bag.pkl')
     # joblib.dump(scaler,'scaler.pkl')
 
@@ -314,6 +343,100 @@ def buildModel(X,y):
     print(classification_report_imbalanced(y_test, y_pred4))
     print(classification_report_imbalanced(y_test, y_pred5))
 
+    probs_ada = ada.predict_proba(X_test)
+    probs_bag = bag.predict_proba(X_test)
+    probs_neural = neural.predict_proba(X_test)
+    probs_logistic = logistic.predict_proba(X_test)
+    probs_svm = svm.decision_function(X_test)
+
+    ROCplot(probs_ada,y_test,"Plots/ROCplotADA-organelle.png")
+    ROCplot(probs_logistic,y_test,"Plots/ROCplotLogistic-organelle.png")
+    ROCplot(probs_bag,y_test,"Plots/ROCplotBAG-organelle.png")
+    ROCplot(probs_neural,y_test,"Plots/ROCplotNeural-organelle.png")
+    ROCplot(probs_svm,y_test,"Plots/ROCplotSVM-organelle.png")
+
+    multiROCplot([probs_ada,probs_logistic,probs_bag,probs_neural,probs_svm],y_test,"Plots/multiROCplot.png",['AdaBoost','Logistic','Bagging Classifier','MLP','SVM'])
+
+def multiROCplot(probs_list, Y_test,save,models):
+    Y_test = label_binarize(Y_test,classes=[0,1,2,3])
+    assert(len(models) == len(probs_list));
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for j in range(0,len(probs_list)):
+        for i in range(0,4):
+            fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test[:,i],probs_list[j][:,i])
+            # fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test,[probs_list[j][k][i] for k in range(len(probs_list[0]))])
+            roc_auc[(j,i)] = auc(fpr[(j,i)],tpr[(j,i)])
+        fpr[(j,'micro')], tpr[(j,'micro')], _ = roc_curve(Y_test.ravel(), probs_list[j].ravel())
+        roc_auc[(j,'micro')] = auc(fpr[(j,'micro')], tpr[(j,'micro')])
+        all_fpr = np.unique(np.concatenate([fpr[(j,k)] for k in range(0,4)]))
+        mean_tpr = np.zeros_like(all_fpr)
+        for i in range(0,4):
+            mean_tpr += interp(all_fpr,fpr[(j,i)],tpr[(j,i)])
+        mean_tpr /= 4
+        fpr[(j,'macro')] = all_fpr
+        tpr[(j,'macro')] = mean_tpr
+        roc_auc[(j,'macro')] = auc(fpr[(j,'macro')],tpr[(j,'macro')])
+    lw = 2
+    plot.figure()
+    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','firebrick'],['gold','slategrey']])
+    for j,colors in zip(range(0,len(probs_list)),color_list):
+        plot.plot(fpr[(j,'micro')], tpr[(j,'micro')],
+             label='micro-average ROC curve (area = {0:0.2f}), Model:{1}'.format(roc_auc[(j,'micro')],models[j]),color=colors[0], linestyle=':', linewidth=4)
+        plot.plot(fpr[(j,'macro')], tpr[(j,'macro')],
+                 label='macro-average ROC curve (area = {0:0.2f}), Model:{1}'.format(roc_auc[(j,'macro')],models[j]),color=colors[1], linestyle=':', linewidth=4)
+    plot.plot([0, 1], [0, 1], 'r--', lw=lw)
+    plot.xlim([0.0, 1.0])
+    plot.ylim([0.0, 1.05])
+    plot.xlabel('False Positive Rate')
+    plot.ylabel('True Positive Rate')
+    plot.title('Multi-Model Receiver Operating Characteristic Plot')
+    l = plot.legend(loc='upper center', bbox_to_anchor=(0.5,-0.1))
+    # plot.show()
+    plot.savefig(save, bbox_extra_artists=(l,), bbox_inches='tight')
+
+
+def ROCplot(probs,Y_test,save):
+    Y_test = label_binarize(Y_test,classes=[0,1,2,3])
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(0,4):
+        fpr[i], tpr[i], _ = roc_curve(Y_test[:,i],probs[:,i])
+        roc_auc[i] = auc(fpr[i],tpr[i])
+
+    fpr['micro'], tpr['micro'], _ = roc_curve(Y_test.ravel(), probs.ravel())
+    roc_auc['micro'] = auc(fpr['micro'], tpr['micro'])
+
+    all_fpr = np.unique(np.concatenate([fpr[i] for i in range(0,4)]))
+    mean_tpr = np.zeros_like(all_fpr)
+    for i in range(0,4):
+        mean_tpr += interp(all_fpr,fpr[i],tpr[i])
+    mean_tpr /= 4
+    fpr['macro'] = all_fpr
+    tpr['macro'] = mean_tpr
+    roc_auc['macro'] = auc(fpr['macro'],tpr['macro'])
+
+    lw = 2
+    plot.figure()
+    plot.plot(fpr["micro"], tpr["micro"],
+         label='micro-average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"]),color='black', linestyle=':', linewidth=4)
+    plot.plot(fpr["macro"], tpr["macro"],
+             label='macro-average ROC curve (area = {0:0.2f})'.format(roc_auc["macro"]),color='navy', linestyle=':', linewidth=4)
+
+    colors = cycle(['olivedrab', 'darkorange', 'darkorchid','royalblue'])
+    for i, color in zip(range(0,4), colors):
+        plot.plot(fpr[i], tpr[i], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f})'.format(i, roc_auc[i]))
+    plot.plot([0, 1], [0, 1], 'r--', lw=lw)
+    plot.xlim([0.0, 1.0])
+    plot.ylim([0.0, 1.05])
+    plot.xlabel('False Positive Rate')
+    plot.ylabel('True Positive Rate')
+    plot.title('Receiver Operating Characteristic Plot')
+    plot.legend(loc="lower right")
+    # plot.show()
+    plot.savefig(save)
 
 
 if __name__ == "__main__":

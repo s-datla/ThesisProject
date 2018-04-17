@@ -17,6 +17,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as pyplot
 from itertools import cycle
+from organelle import buildPredict
 
 # Metric calculation functions
 from sklearn.svm import SVC
