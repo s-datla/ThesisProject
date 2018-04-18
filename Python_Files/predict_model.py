@@ -27,7 +27,7 @@ from imblearn.metrics import classification_report_imbalanced
 
 # Classification imports
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, label_binarize
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import BaggingClassifier
 from imblearn.ensemble import BalancedBaggingClassifier
@@ -155,57 +155,76 @@ def bagClassify(path):
     scaler  = joblib.load('bag_scaler.pkl')
 
     # predY1 = svc.predict(X_test)
-    # predY1 = bbc.predict(X_test)
-    # predY2 = bag.predict(X_test)
-    # predY3 = std.predict(X_test)
+    predY1 = bbc.predict(X_test)
+    predY2 = bag.predict(X_test)
+    predY3 = std.predict(X_test)
 
     # Classification Metric display
     # print "SVC"
     # print(confusion_matrix(Y_test,predY1))
     # print(classification_report_imbalanced(Y_test,predY1))
     # print(matthews_corrcoef(Y_test, predY1))
-    # print "Balanced Bagging"
-    # print(confusion_matrix(Y_test,predY2))
-    # print(classification_report_imbalanced(Y_test,predY2))
-    # print(matthews_corrcoef(Y_test, predY2))
-    # print "Standard MLP"
-    # print(confusion_matrix(Y_test,predY3))
-    # print(classification_report_imbalanced(Y_test,predY3))
-    # print(matthews_corrcoef(Y_test, predY3))
+    print "Balanced Bagging MLP"
+    print(confusion_matrix(Y_test,predY1))
+    print(classification_report_imbalanced(Y_test,predY1))
+    print(matthews_corrcoef(Y_test, predY1))
+    print "Balanced Bagging"
+    print(confusion_matrix(Y_test,predY2))
+    print(classification_report_imbalanced(Y_test,predY2))
+    print(matthews_corrcoef(Y_test, predY2))
+    print "Standard MLP"
+    print(confusion_matrix(Y_test,predY3))
+    print(classification_report_imbalanced(Y_test,predY3))
+    print(matthews_corrcoef(Y_test, predY3))
 
-    # probs_bbc = bbc.predict_proba(X_test)
-    # probs_bag = bag.predict_proba(X_test)
-    # probs_std = std.predict_proba(X_test)
+    probs_bbc = bbc.predict_proba(X_test)
+    probs_bag = bag.predict_proba(X_test)
+    probs_std = std.predict_proba(X_test)
     # probs_svc = svc.predict_proba(X_test)
 
-    # ROCplot(probs_bbc,Y_test,"ROCplotBBC.png")
-    # ROCplot(probs_bag,Y_test,"ROCplotBAG.png")
-    # ROCplot(probs_std,Y_test,"ROCplotSTD.png")
+    ROCplot(probs_bbc,Y_test,"Plots/ROCplotBBC.png")
+    ROCplot(probs_bag,Y_test,"Plots/ROCplotBAG.png")
+    ROCplot(probs_std,Y_test,"Plots/ROCplotSTD.png")
     # ROCplot(probs_svc,Y_test,"ROCplotSVC.png")
 
-    # multiROCplot([probs_bbc,probs_bag,probs_std,probs_svc],Y_test,"multiROCplot.png",['Bagging MLP','Bagging','MLP','SVC'])
-    bbc_probs_train = bbc.predict_proba(X_train)
-    bag_probs_train = bag.predict_proba(X_train)
-    std_probs_train = std.predict_proba(X_train)
+    multiROCplot([probs_bbc,probs_bag,probs_std,probs_svc],Y_test,"Plots/multiROCplot.png",['Bagging MLP','Bagging','MLP','SVC'])
+
+    # bbc_probs_train = bbc.predict_proba(X_train)
+    # bag_probs_train = bag.predict_proba(X_train)
+    # std_probs_train = std.predict_proba(X_train)
     # svc_probs_train = std.predict_proba(X_train)
-    print len(std_probs_train), len(bag_probs_train), len(bbc_probs_train)
+    # print len(std_probs_train), len(bag_probs_train), len(bbc_probs_train)
 
 
 def multiROCplot(probs_list, Y_test,save,models):
+    Y_test = label_binarize(Y_test,classes=[0,1])
     assert(len(models) == len(probs_list));
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
     for j in range(0,len(probs_list)):
         for i in range(0,2):
-            fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test,[probs_list[j][k][i] for k in range(len(probs_list[0]))])
+            fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test[:,i],probs_list[j][:,i])
+            # fpr[(j,i)], tpr[(j,i)], _ = roc_curve(Y_test,[probs_list[j][k][i] for k in range(len(probs_list[0]))])
             roc_auc[(j,i)] = auc(fpr[(j,i)],tpr[(j,i)])
+        fpr[(j,'micro')], tpr[(j,'micro')], _ = roc_curve(Y_test.ravel(), probs_list[j].ravel())
+        roc_auc[(j,'micro')] = auc(fpr[(j,'micro')], tpr[(j,'micro')])
+        all_fpr = np.unique(np.concatenate([fpr[(j,k)] for k in range(0,2)]))
+        mean_tpr = np.zeros_like(all_fpr)
+        for i in range(0,2):
+            mean_tpr += interp(all_fpr,fpr[(j,i)],tpr[(j,i)])
+        mean_tpr /= 2
+        fpr[(j,'macro')] = all_fpr
+        tpr[(j,'macro')] = mean_tpr
+        roc_auc[(j,'macro')] = auc(fpr[(j,'macro')],tpr[(j,'macro')])
     lw = 2
-    pyplot.figure()
-    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','firebrick']])
+    plot.figure()
+    color_list = cycle([['olivedrab', 'darkorange'], ['darkorchid','navy'],['black','firebrick'],['gold','slategrey']])
     for j,colors in zip(range(0,len(probs_list)),color_list):
-        for k,color in zip(range(0,2),colors):
-            pyplot.plot(fpr[(j,k)], tpr[(j,k)], color=color, lw=lw,label='ROC curve of class {0} (area = {1:0.2f}), Model: {2}'.format(k, roc_auc[(j,k)],models[j]))
+        plot.plot(fpr[(j,'micro')], tpr[(j,'micro')],
+             label='micro-average ROC curve (area = {0:0.2f}), Model:{1}'.format(roc_auc[(j,'micro')],models[j]),color=colors[0], linestyle=':', linewidth=4)
+        plot.plot(fpr[(j,'macro')], tpr[(j,'macro')],
+                 label='macro-average ROC curve (area = {0:0.2f}), Model:{1}'.format(roc_auc[(j,'macro')],models[j]),color=colors[1], linestyle=':', linewidth=4)
     pyplot.plot([0, 1], [0, 1], 'r--', lw=lw)
     pyplot.xlim([0.0, 1.0])
     pyplot.ylim([0.0, 1.05])
@@ -217,14 +236,15 @@ def multiROCplot(probs_list, Y_test,save,models):
     pyplot.savefig(save, bbox_extra_artists=(l,), bbox_inches='tight')
 
 def ROCplot(probs,Y_test,save):
+    Y_test = label_binarize(Y_test,classes=[0,1,2,3])
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
     for i in range(0,2):
-        fpr[i], tpr[i], _ = roc_curve(Y_test,[probs[k][i] for k in range(len(probs))])
+        fpr[i], tpr[i], _ = roc_curve(Y_test[:,i],probs[:,i])
         roc_auc[i] = auc(fpr[i],tpr[i])
 
-    fpr['micro'], tpr['micro'], _ = roc_curve(Y_test, [probs[k][1] for k in range(len(probs))])
+    fpr['micro'], tpr['micro'], _ = roc_curve(Y_test.ravel(), probs.ravel())
     roc_auc['micro'] = auc(fpr['micro'], tpr['micro'])
 
     all_fpr = np.unique(np.concatenate([fpr[i] for i in range(0,2)]))
