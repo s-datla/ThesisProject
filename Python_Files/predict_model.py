@@ -19,6 +19,8 @@ import matplotlib.pyplot as pyplot
 from itertools import cycle
 from organelle import buildPredict
 
+from Bio import SeqIO
+
 # Metric calculation functions
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef, roc_curve, auc
@@ -31,6 +33,7 @@ from sklearn.preprocessing import StandardScaler, label_binarize
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import BaggingClassifier
 from imblearn.ensemble import BalancedBaggingClassifier
+
 
 windowSize = 7
 
@@ -49,6 +52,9 @@ def main():
         elif(sys.argv[2] == 'bagClassify' and len(sys.argv) == 4):
             windowSize = int(sys.argv[3])
             bagClassify(sys.argv[1])
+        elif(sys.argv[2] == 'organelle' and len(sys.argv) == 4):
+            windowSize = int(sys.argv[3])
+            buildOrganelle(sys.argv[1])
         elif(sys.argv[2] == 'predict'):
             predictModel(sys.argv[1])
         elif(sys.argv[2] == 'predictMTX'):
@@ -275,6 +281,95 @@ def ROCplot(probs,Y_test,save):
     pyplot.legend(loc="lower right")
     pyplot.show()
     pyplot.savefig(save)
+
+def buildOrganelle(path):
+
+    seqs = []
+    for seq_record in SeqIO.parse("../Data_Files/train_files/disprotFasta.fa","fasta"):
+        seqs += [str(seq_record.seq)]
+    probs_org = buildPredict(seqs)
+    print "Len Probs Org: {} ".format(len(probs_org))
+
+    mtxCompressed = np.load(path)
+    X = mtxCompressed['savedX']
+    Y = mtxCompressed['savedY']
+    print("Started scaling!")
+    X = np.reshape(X,(X.shape[0],X.shape[1] * X.shape[2]))
+    scaler = StandardScaler()
+    print(scaler.fit(X))
+    scaledTrainX = scaler.transform(X)
+    print("Splitting into Test and Train")
+    X_train, X_test, Y_train, Y_test = train_test_split(scaledTrainX, Y, test_size=0.33, random_state=19)
+
+    print("Training Data is distributed as follows: " + str(sorted(Counter(Y_train).items())))
+    print("Testing Data is distributed as follows: " + str(sorted(Counter(Y_test).items())))
+
+    base = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(windowSize*21,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
+
+    base.fit(X_train,Y_train)
+    # Saving fitted Models and scaler
+    joblib.dump(base, 'org_base.pkl')
+    joblib.dump(scaler, 'bag_scaler.pkl')
+
+    # Loading saved Models and scaler
+    # base = joblib.load('org_base.pkl')
+    # scaler  = joblib.load('bag_scaler.pkl')
+
+    base_probs = base.predict_proba(scaledTrainX)
+    org_X = np.hstack(base_probs,probs_org)
+    split_index = len(Y_train)
+
+    org_scaler = StandardScaler()
+    print(org_scaler.fit(org_X))
+    scaled_org_train = org_scaler.transform(org_X[:split_index])
+    scaled_org_test = org_scaler.transform(org_X[split_index:])
+
+    std = MLPClassifier(hidden_layer_sizes=(6,2),max_iter=500, solver='adam',random_state=19)
+    svc = SVC(class_weight='balanced',random_state=19,decision_function_shape='ovr')
+    bag = BalancedBaggingClassifier(n_estimators=200,random_state=19)
+    bbc = BalancedBaggingClassifier(base_estimator=MLPClassifier(hidden_layer_sizes=(6,2),max_iter=500),ratio='auto',replacement=False,random_state=19)
+
+    std.fit(scaled_org_train,Y_train)
+    svc.fit(scaled_org_train,Y_train)
+    bag.fit(scaled_org_train,Y_train)
+    bbc.fit(scaled_org_train,Y_train)
+
+    # Saving fitted Models and scaler
+    joblib.dump(svc, 'org_svc.pkl')
+    joblib.dump(bbc, 'org_bbc.pkl')
+    joblib.dump(bag,'org_bag.pkl')
+    joblib.dump(std,'org_std.pkl')
+    joblib.dump(scaler, 'org_scaler.pkl')
+
+    # Loading saved Models and scaler
+    # bbc = joblib.load('org_bbc.pkl')
+    # bag = joblib.load('org_bag.pkl')
+    # std = joblib.load('org_std.pkl')
+    # svc = joblib.load('org_svc.pkl')
+    # org_scaler  = joblib.load('org_scaler.pkl')
+
+    predY1 = bbc.predict(scaled_org_test)
+    predY2 = bag.predict(scaled_org_test)
+    predY3 = std.predict(scaled_org_test)
+    predY4 = svc.predict(scaled_org_test)
+
+    # Classification Metric display
+    print "Balanced Bagging MLP"
+    print(confusion_matrix(Y_test,predY1))
+    print(classification_report_imbalanced(Y_test,predY1))
+    print(matthews_corrcoef(Y_test, predY1))
+    print "Balanced Bagging"
+    print(confusion_matrix(Y_test,predY2))
+    print(classification_report_imbalanced(Y_test,predY2))
+    print(matthews_corrcoef(Y_test, predY2))
+    print "Standard MLP"
+    print(confusion_matrix(Y_test,predY3))
+    print(classification_report_imbalanced(Y_test,predY3))
+    print(matthews_corrcoef(Y_test, predY3))
+    print "SVC"
+    print(confusion_matrix(Y_test,predY4))
+    print(classification_report_imbalanced(Y_test,predY4))
+    print(matthews_corrcoef(Y_test, predY4))
 
 def predictModel(path):
     compressed = np.load(path)

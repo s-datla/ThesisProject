@@ -5,7 +5,7 @@ import sys
 import os
 from subprocess import Popen, PIPE
 
-output_file = "result4.txt"
+output_file = "result5.txt"
 
 read_mtx = [['read_mtx.py'],
             ['../Data_Files/train_files/disprotFasta.fa','../Data_Files/test_files/disopred3test.fa'],
@@ -68,7 +68,8 @@ for j in range(0,2):
     with open(output_file,'a') as a:
         a.writelines(out)
         a.writelines(err)
-p = Popen([cmd,predict[0][0],predict[1][0],'bagClassify',str(i)], stdout=PIPE,stderr=PIPE)
+# p = Popen([cmd,predict[0][0],predict[1][0],'bagClassify',str(i)], stdout=PIPE,stderr=PIPE)
+p = Popen([cmd,predict[0][0],predict[1][0],'organelle',str(i)], stdout=PIPE,stderr=PIPE)
 out,err = p.communicate()
 with open(output_file,'a') as a:
     a.writelines(out)
