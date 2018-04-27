@@ -1,0 +1,143 @@
+----WINDOW SIZE---
+---- 21----
+803
+Shape of data array: (406750, 441)
+Number of disordered positions: 77431 , Number of structured positions: 329319 , Number of context dependent positions: 0
+9
+Shape of data array: (2209, 441)
+Number of disordered positions: 163 , Number of structured positions: 2046 , Number of context dependent positions: 0
+94
+Shape of data array: (25370, 441)
+Number of disordered positions: 1502 , Number of structured positions: 23868 , Number of context dependent positions: 0
+406750 annotations
+Sorted through MTX files (#files: 803)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmTrain
+2209 annotations
+Sorted through MTX files (#files: 9)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmTest
+25370 annotations
+Sorted through MTX files (#files: 94)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmCASP
+406750 406750 406750
+Created Windows !
+Length: 406750
+((406750, 21, 21), (406750,))
+2209 2209 2209
+Created Windows !
+Length: 2209
+((2209, 21, 21), (2209,))
+25370 25370 25370
+Created Windows !
+Length: 25370
+((25370, 21, 21), (25370,))
+Started scaling!
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Splitting into Test and Train
+Training Data is distributed as follows: [(0, 220740), (1, 51782)]
+Testing Data is distributed as follows: [(0, 108579), (1, 25649)]
+Fitted Model !
+Now saving model and scaler
+Balanced Bagging MLP
+[[89116 19463]
+ [ 8469 17180]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.91      0.82      0.67      0.86      0.74      0.56    108579
+          1       0.47      0.67      0.82      0.55      0.74      0.54     25649
+
+avg / total       0.83      0.79      0.70      0.80      0.74      0.55    134228
+
+0.432925307602
+Balanced Bagging
+[[93694 14885]
+ [11140 14509]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.89      0.86      0.57      0.88      0.70      0.50    108579
+          1       0.49      0.57      0.86      0.53      0.70      0.47     25649
+
+avg / total       0.82      0.81      0.62      0.81      0.70      0.50    134228
+
+0.407441859304
+Standard MLP
+[[91217 17362]
+ [10507 15142]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.90      0.84      0.59      0.87      0.70      0.51    108579
+          1       0.47      0.59      0.84      0.52      0.70      0.48     25649
+
+avg / total       0.81      0.79      0.64      0.80      0.70      0.50    134228
+
+0.395050981154
+----PREDICTIONS---
+(2209, 21, 21) (2209,)
+Loading model
+Balanced Bagging MLP
+[[1091  955]
+ [  56  107]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.95      0.53      0.66      0.68      0.59      0.35      2046
+          1       0.10      0.66      0.53      0.17      0.59      0.35       163
+
+avg / total       0.89      0.54      0.65      0.65      0.59      0.35      2209
+
+0.0992471415114
+Balanced Bagging
+[[1274  772]
+ [ 125   38]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.91      0.62      0.23      0.74      0.38      0.15      2046
+          1       0.05      0.23      0.62      0.08      0.38      0.14       163
+
+avg / total       0.85      0.59      0.26      0.69      0.38      0.15      2209
+
+-0.0782237679128
+Standard MLP
+[[ 929 1117]
+ [  30  133]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.97      0.45      0.82      0.62      0.61      0.36      2046
+          1       0.11      0.82      0.45      0.19      0.61      0.38       163
+
+avg / total       0.91      0.48      0.79      0.59      0.61      0.36      2209
+
+0.142415848433
+(25370, 21, 21) (25370,)
+Loading model
+Balanced Bagging MLP
+[[21799  2069]
+ [  839   663]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.96      0.91      0.44      0.94      0.63      0.42     23868
+          1       0.24      0.44      0.91      0.31      0.63      0.38      1502
+
+avg / total       0.92      0.89      0.47      0.90      0.63      0.42     25370
+
+0.27007044239
+Balanced Bagging
+[[22975   893]
+ [ 1063   439]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.96      0.96      0.29      0.96      0.53      0.30     23868
+          1       0.33      0.29      0.96      0.31      0.53      0.26      1502
+
+avg / total       0.92      0.92      0.33      0.92      0.53      0.30     25370
+
+0.269679692097
+Standard MLP
+[[20744  3124]
+ [  773   729]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.96      0.87      0.49      0.91      0.65      0.44     23868
+          1       0.19      0.49      0.87      0.27      0.65      0.41      1502
+
+avg / total       0.92      0.85      0.51      0.88      0.65      0.44     25370
+
+0.233092120751

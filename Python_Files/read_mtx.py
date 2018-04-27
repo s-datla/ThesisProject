@@ -13,7 +13,8 @@ def main():
         crawl_files(sys.argv[1],sys.argv[2],sys.argv[3])
 
 def crawl_files(path,anns,save):
-    baseFileName = '../Data_Files/DisorderHunter-master/DISOPRED_RUNS/'
+    file_name = os.path.basename(path).split('.')[0]
+    baseFileName = '../Data_Files/mtx_files/' + file_name
     PSSMvalues = []
     seqLengths = []
     with open(path, 'r') as r:
@@ -22,7 +23,7 @@ def crawl_files(path,anns,save):
                 identifiers = lines.split(' ')
                 accessionID = identifiers[0].strip('>')
                 # print accessionID
-                currentPSSM,length = process_mtx(baseFileName + str(accessionID) + '/' + str(accessionID) + '.mtx')
+                currentPSSM,length = process_mtx(baseFileName + '/' + str(accessionID) + '.mtx')
                 PSSMvalues += currentPSSM
                 seqLengths += [length]
     annotations = load_compressed_file(anns)

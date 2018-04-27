@@ -1,0 +1,213 @@
+----WINDOW SIZE---
+---- 21----
+803
+Shape of data array: (406750, 441)
+Number of disordered positions: 77431 , Number of structured positions: 329319 , Number of context dependent positions: 0
+9
+Shape of data array: (2209, 441)
+Number of disordered positions: 163 , Number of structured positions: 2046 , Number of context dependent positions: 0
+94
+Shape of data array: (25370, 441)
+Number of disordered positions: 1502 , Number of structured positions: 23868 , Number of context dependent positions: 0
+406750 annotations
+Sorted through MTX files (#files: 803)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmTrain
+2209 annotations
+Sorted through MTX files (#files: 9)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmTest
+25370 annotations
+Sorted through MTX files (#files: 94)
+Saved compressed PSSM in ../Data_Files/temp_files/pssmCASP
+406750 406750 406750
+Created Windows !
+Length: 406750
+((406750, 21, 21), (406750,))
+2209 2209 2209
+Created Windows !
+Length: 2209
+((2209, 21, 21), (2209,))
+25370 25370 25370
+Created Windows !
+Length: 25370
+((25370, 21, 21), (25370,))
+['../Data_Files/organelle_files/cyto.fa', '../Data_Files/organelle_files/mito.fa', '../Data_Files/organelle_files/nucleus.fa', '../Data_Files/organelle_files/secreted.fa']
+Distribution of labels = [(0, 3004), (1, 1299), (2, 3314), (3, 1605)]
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Len Probs Org: 406750 
+(406750, 4)
+Started scaling!
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Splitting into Test and Train
+Training Data is distributed as follows: [(0, 220740), (1, 51782)]
+Testing Data is distributed as follows: [(0, 108579), (1, 25649)]
+(406750, 2)
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Balanced Bagging MLP
+[[59077 49502]
+ [14070 11579]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.81      0.54      0.45      0.65      0.50      0.25    108579
+          1       0.19      0.45      0.54      0.27      0.50      0.24     25649
+
+avg / total       0.69      0.53      0.47      0.58      0.50      0.25    134228
+
+-0.00352679615866
+Balanced Bagging
+[[84463 24116]
+ [20072  5577]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.81      0.78      0.22      0.79      0.41      0.18    108579
+          1       0.19      0.22      0.78      0.20      0.41      0.16     25649
+
+avg / total       0.69      0.67      0.32      0.68      0.41      0.17    134228
+
+-0.00442368732826
+Standard MLP
+[[108579      0]
+ [ 25649      0]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.81      1.00      0.00      0.89      0.00      0.00    108579
+          1       0.00      0.00      1.00      0.00      0.00      0.00     25649
+
+avg / total       0.65      0.81      0.19      0.72      0.00      0.00    134228
+
+0.0
+SVC
+[[59723 48856]
+ [14190 11459]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.81      0.55      0.45      0.65      0.50      0.25    108579
+          1       0.19      0.45      0.55      0.27      0.50      0.24     25649
+
+avg / total       0.69      0.53      0.47      0.58      0.50      0.25    134228
+
+-0.00252607938442
+(134228, 2) (134228, 2)
+(134228, 2) (134228, 2)
+(134228, 2) (134228, 2)
+(134228,) (134228, 2)
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:538: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+Traceback (most recent call last):
+  File "predict_model.py", line 512, in <module>
+    main()
+  File "predict_model.py", line 57, in main
+    buildOrganelle(sys.argv[1])
+  File "predict_model.py", line 395, in buildOrganelle
+    ROCplot(probs_svc,Y_test,"Plots/ROCplotSVC-org.png")
+  File "predict_model.py", line 255, in ROCplot
+    fpr[i], tpr[i], _ = roc_curve(Y_test[:,i],probs[:,i])
+IndexError: too many indices for array
+----PREDICTIONS---
+['../Data_Files/organelle_files/cyto.fa', '../Data_Files/organelle_files/mito.fa', '../Data_Files/organelle_files/nucleus.fa', '../Data_Files/organelle_files/secreted.fa']
+Distribution of labels = [(0, 3004), (1, 1299), (2, 3314), (3, 1605)]
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Len Probs Org: 2209 
+(2209, 6)
+Balanced Bagging MLP
+[[ 680 1366]
+ [ 116   47]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.85      0.33      0.29      0.48      0.31      0.10      2046
+          1       0.03      0.29      0.33      0.06      0.31      0.10       163
+
+avg / total       0.79      0.33      0.29      0.45      0.31      0.10      2209
+
+-0.206539233513
+Balanced Bagging
+[[1648  398]
+ [ 125   38]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.93      0.81      0.23      0.86      0.43      0.20      2046
+          1       0.09      0.23      0.81      0.13      0.43      0.18       163
+
+avg / total       0.87      0.76      0.28      0.81      0.43      0.20      2209
+
+0.0253553304786
+Standard MLP
+[[2046    0]
+ [ 163    0]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.93      1.00      0.00      0.96      0.00      0.00      2046
+          1       0.00      0.00      1.00      0.00      0.00      0.00       163
+
+avg / total       0.86      0.93      0.07      0.89      0.00      0.00      2209
+
+0.0
+SVC
+[[ 668 1378]
+ [  57  106]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.92      0.33      0.65      0.48      0.46      0.21      2046
+          1       0.07      0.65      0.33      0.13      0.46      0.22       163
+
+avg / total       0.86      0.35      0.63      0.46      0.46      0.21      2209
+
+-0.0129180260128
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:538: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
+['../Data_Files/organelle_files/cyto.fa', '../Data_Files/organelle_files/mito.fa', '../Data_Files/organelle_files/nucleus.fa', '../Data_Files/organelle_files/secreted.fa']
+Distribution of labels = [(0, 3004), (1, 1299), (2, 3314), (3, 1605)]
+StandardScaler(copy=True, with_mean=True, with_std=True)
+Len Probs Org: 25370 
+(25370, 6)
+Balanced Bagging MLP
+[[12620 11248]
+ [ 1083   419]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.92      0.53      0.28      0.67      0.38      0.15     23868
+          1       0.04      0.28      0.53      0.06      0.38      0.14      1502
+
+avg / total       0.87      0.51      0.29      0.64      0.38      0.15     25370
+
+-0.0910601838816
+Balanced Bagging
+[[18387  5481]
+ [ 1222   280]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.94      0.77      0.19      0.85      0.38      0.15     23868
+          1       0.05      0.19      0.77      0.08      0.38      0.14      1502
+
+avg / total       0.89      0.74      0.22      0.80      0.38      0.15     25370
+
+-0.0243472590377
+Standard MLP
+[[23868     0]
+ [ 1502     0]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.94      1.00      0.00      0.97      0.00      0.00     23868
+          1       0.00      0.00      1.00      0.00      0.00      0.00      1502
+
+avg / total       0.89      0.94      0.06      0.91      0.00      0.00     25370
+
+0.0
+SVC
+[[14052  9816]
+ [ 1013   489]]
+                   pre       rec       spe        f1       geo       iba       sup
+
+          0       0.93      0.59      0.33      0.72      0.44      0.20     23868
+          1       0.05      0.33      0.59      0.08      0.44      0.19      1502
+
+avg / total       0.88      0.57      0.34      0.68      0.44      0.20     25370
+
+-0.0411808314218
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:1135: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python2.7/dist-packages/sklearn/metrics/classification.py:538: RuntimeWarning: invalid value encountered in double_scalars
+  mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
